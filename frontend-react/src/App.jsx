@@ -1,26 +1,18 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import AdminDashboard from './pages/admin/Dashboard';
-import InventoryPage from './pages/admin/Inventory';
-import ListedItemsPage from './pages/admin/ListedItems';
-import AdminNavbar from './components/Navbar/AdminNavbar';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import AdminDashboard from "./pages/admin/Dashboard";
+import CompanyDashboard from "./pages/company/Dashboard";
 
 function App() {
-  // For now, just assume admin is always logged in
-  const isLoggedIn = true;
-
-  return (
-    <Router>
-      {isLoggedIn && <AdminNavbar />}
-
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/dashboard" element={<AdminDashboard />} />
-        <Route path="/inventory" element={<InventoryPage />} />
-        <Route path="/listed-items" element={<ListedItemsPage />} />
-      </Routes>
-    </Router>
-  );
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<LoginPage />} />
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/company/:id/dashboard" element={<CompanyDashboard />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;

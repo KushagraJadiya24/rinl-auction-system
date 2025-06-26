@@ -1,0 +1,7 @@
+--USE rinl_auction_system;
+--INSERT INTO companies (name, email, password, address) VALUES
+--('Tata Steel Ltd', 'contact@tatasteel.com', '1111', 'Mumbai, Maharashtra, India'),
+--('JSW Steel', 'info@jswsteel.in', '2222', 'Bengaluru, Karnataka, India'),
+--('ArcelorMittal India', 'support@arcelormittal.co.in', '3333', 'New Delhi, India'),
+--('Essar Steel', 'hello@essarsteel.com', '4444', 'Hazira, Gujarat, India'),
+--('Bhushan Steel', 'admin@bhushansteel.in', '5555', 'Kolkata, West Bengal, India');
