@@ -2,12 +2,12 @@ package com.rinl.auction_system.dto;
 
 public class LoginResponse {
     private String role;
-    private int id;
+    private long id;
     private String name;
     private String message;
 
     // Constructor for success with all fields
-    public LoginResponse(String role, int id, String name, String message) {
+    public LoginResponse(String role, long id, String name, String message) {
         this.role = role;
         this.id = id;
         this.name = name;
@@ -15,7 +15,7 @@ public class LoginResponse {
     }
 
     // Constructor for error case
-    public LoginResponse(String role, int id, String message) {
+    public LoginResponse(String role, long id, String message) {
         this.role = role;
         this.id = id;
         this.message = message;
@@ -26,7 +26,7 @@ public class LoginResponse {
         return role;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

@@ -16,7 +16,7 @@ public class AuctionResponse {
         this.id = auction.getId();
         this.item_name = auction.getItem().getItem_name(); // ✅ nested flatten
         this.quantity = auction.getQuantity();
-        this.type = auction.getType().name();
+        this.type = auction.getType();
         this.currentBid = auction.getBasePrice();      // ✅ matches getBasePrice()
         this.startingPrice = auction.getBasePrice();   // ✅ not getStartingPrice()
         this.endTime = auction.getEndTime().toString();

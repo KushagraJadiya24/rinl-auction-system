@@ -44,7 +44,7 @@ public class AuctionController {
 
             Auction auction = new Auction();
             auction.setItem(inventory);
-            auction.setType(AuctionType.valueOf(request.getType().toUpperCase()));
+            auction.setType(request.getType().toUpperCase());
             auction.setQuantity(request.getQuantity());
             auction.setBasePrice(request.getStartingPrice());
             auction.setStartTime(start);

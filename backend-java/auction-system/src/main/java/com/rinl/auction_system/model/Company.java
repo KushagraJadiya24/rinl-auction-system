@@ -8,7 +8,7 @@ public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;  // changed from company_id to id
+    private long id;
 
     @Column(unique = true, nullable = false)
 
@@ -33,11 +33,11 @@ public class Company {
 
     // Getters and Setters
 
-    public int getId() {  // changed from getCompany_id to getId
+    public long getId() {  // changed from getCompany_id to getId
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

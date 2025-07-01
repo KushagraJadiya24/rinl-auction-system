@@ -6,7 +6,7 @@ import com.rinl.auction_system.model.*;
 import com.rinl.auction_system.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,19 +39,49 @@ public class BidController {
         return "Bid placed successfully!";
     }
 
+    @Transactional
     @GetMapping("/auction/{auctionId}")
     public List<BidResponse> getBidsForAuction(@PathVariable Long auctionId) {
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new RuntimeException("Auction not found"));
 
-        List<Bid> bids = bidRepository.findByAuctionOrderByBidTimeDesc(auction);
+        List<Bid> bids = bidRepository.findByAuction(auction);
+
+        if (bids.isEmpty()) return List.of();
+
+        // Sort bids based on auction type
+        if ("HIGHEST".equalsIgnoreCase(auction.getType())) {
+            bids.sort((a, b) -> Double.compare(b.getAmount(), a.getAmount()));
+        } else {
+            bids.sort((a, b) -> Double.compare(a.getAmount(), b.getAmount()));
+        }
+
+        Long winningCompanyId = null;
+
+        if (auction.isClosed()) {
+
+            winningCompanyId = bids.get(0).getCompany().getId();
+            System.out.println("Winner: " + winningCompanyId);
+
+            // ✅ Only update if necessary
+            if (auction.getWinnerCompanyId() == null || !auction.getWinnerCompanyId().equals(winningCompanyId)) {
+                auction.setWinnerCompanyId(winningCompanyId);
+                auctionRepository.save(auction);
+                auctionRepository.flush(); // 💾 Force DB update
+            }
+        }
+
+        Long finalWinningCompanyId = winningCompanyId;
 
         return bids.stream()
                 .map(bid -> new BidResponse(
+                        bid.getCompany().getId(),
                         bid.getCompany().getName(),
                         bid.getAmount(),
-                        bid.getBidTime()
+                        bid.getBidTime(),
+                        finalWinningCompanyId != null && finalWinningCompanyId.equals(bid.getCompany().getId())
                 ))
                 .collect(Collectors.toList());
     }
+
 }

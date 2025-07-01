@@ -137,14 +137,21 @@ export default function AuctionDetailsPage() {
             </tr>
           </thead>
           <tbody>
+            
             {bids.map((bid, index) => (
-              <tr key={index}>
-                <td>{bid.companyName}</td>
+              <tr key={index} className={bid.winner ? "table-success fw-bold" : ""}>
+                <td>
+                  {bid.companyName}
+                  {bid.winner && (
+                    <span className="badge bg-success ms-2">Winner</span>
+                  )}
+                </td>
                 <td>₹{bid.amount}</td>
                 <td>{format(new Date(bid.bidTime), 'dd MMM yyyy, hh:mm a')}</td>
               </tr>
             ))}
           </tbody>
+
         </table>
 
         {/* Place Bid */}

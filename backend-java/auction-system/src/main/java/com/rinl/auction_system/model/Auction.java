@@ -16,9 +16,8 @@ public class Auction {
     @JoinColumn(name = "item_id", nullable = false)
     private Inventory item;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "auction_type", nullable = false)
-    private AuctionType type;
+    private String type;
 
     @Column(nullable = false)
     private int quantity;
@@ -35,7 +34,16 @@ public class Auction {
     @Column(name = "is_closed", nullable = false)
     private boolean isClosed;
 
-    // Getters & Setters
+    @Column(name = "winner_company_id")
+    private Long winnerCompanyId;
+
+    public Long getWinnerCompanyId() {
+        return winnerCompanyId;
+    }
+
+    public void setWinnerCompanyId(Long winnerCompanyId) {
+        this.winnerCompanyId = winnerCompanyId;
+    }
 
     public Long getId() {
         return id;
@@ -49,11 +57,11 @@ public class Auction {
         this.item = item;
     }
 
-    public AuctionType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(AuctionType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
