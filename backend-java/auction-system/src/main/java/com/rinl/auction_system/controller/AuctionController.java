@@ -9,6 +9,10 @@ import com.rinl.auction_system.repository.AuctionRepository;
 import com.rinl.auction_system.repository.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.util.Optional;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -56,6 +60,21 @@ public class AuctionController {
             throw new RuntimeException("Error creating auction: " + e.getMessage());
         }
     }
+
+
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AuctionResponse> getAuctionById(@PathVariable Long id) {
+        Optional<Auction> auctionOpt = auctionRepository.findById(id);
+        if (auctionOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Auction auction = auctionOpt.get();
+        AuctionResponse response = new AuctionResponse(auction);
+        return ResponseEntity.ok(response);
+    }
+
+
 
 
     @GetMapping("/active")

@@ -74,7 +74,11 @@ VALUES
 
 select * from inventory;
 select * from auctions;
-ALTER TABLE auctions 
-MODIFY COLUMN auction_type VARCHAR(20) NOT NULL;
+select * from bids;
+-- ALTER TABLE auctions 
+-- MODIFY COLUMN auction_type VARCHAR(20) NOT NULL;
 
 UPDATE auctions SET end_time = '2024-06-30 01:00:00', is_closed = 0 WHERE auction_id = 7;
+UPDATE auctions SET start_time = NOW() WHERE start_time IS NULL;
+SET SQL_SAFE_UPDATES = 0;
+

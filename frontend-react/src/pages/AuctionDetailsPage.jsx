@@ -1,95 +1,192 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { Card, Table, Form, Button } from 'react-bootstrap';
-import { useAuctions } from "../hooks/useAuctions";
+// src/pages/AuctionDetailsPage.jsx
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import CompanyNavbar from "../components/Navbar/CompanyNavbar";
 import AdminNavbar from "../components/Navbar/AdminNavbar";
+import { useAuctions } from "../hooks/useAuctions";
+import { format, intervalToDuration, isBefore } from 'date-fns'; // Formatting dates
 
-const AuctionDetails = () => {
+export default function AuctionDetailsPage() {
   const { id } = useParams();
+  const [auction, setAuction] = useState(null);
   const { userRole } = useAuctions();
-  // Demo auction detail (replace with API data later)
-  const auction = {
-    id,
-    itemName: 'Steel Rods',
-    description: 'High quality TMT steel rods',
-    type: 'HIGHEST_BID',
-    basePrice: 45000,
-    quantity: 100,
-    imageUrl: 'https://via.placeholder.com/150',
-    startTime: '2025-07-01T10:00:00',
-    endTime: '2025-07-03T10:00:00'
+  const [bids, setBids] = useState([]);
+  const [showBidForm, setShowBidForm] = useState(false);
+  const [bidAmount, setBidAmount] = useState("");
+  const [timeLeft, setTimeLeft] = useState('');
+
+  const fetchBids = async () => {
+    try {
+      const res = await axios.get(`http://localhost:8080/api/bids/auction/${id}`, {
+        withCredentials: true,
+      });
+      setBids(res.data);
+    } catch (err) {
+      console.error("Error fetching bids:", err);
+    }
   };
 
-  // Demo bids (later from backend)
-  const bids = [
-    { name: 'Company A', amount: 47000, time: '2025-07-01 11:00' },
-    { name: 'Company B', amount: 48000, time: '2025-07-01 12:00' },
-  ];
+  useEffect(() => {
+    const fetchAuction = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8080/api/auctions/${id}`, {
+          withCredentials: true,
+        });
+        setAuction(res.data);
+      } catch (error) {
+        console.error("Failed to fetch auction:", error);
+      }
+    };
 
-  const calculateTimeRemaining = () => {
-    const end = new Date(auction.endTime);
+    fetchAuction();
+    fetchBids();
+  }, [id]);
+
+  // Countdown timer
+  useEffect(() => {
+    if (!auction || !auction.endTime) return;
+
+    const endTime = new Date(auction.endTime);
+
+    const updateTimer = () => {
+      const now = new Date();
+
+      if (isBefore(endTime, now)) {
+        setTimeLeft("Auction ended");
+        return;
+      }
+
+      const duration = intervalToDuration({ start: now, end: endTime });
+      const formatted = `${duration.hours}h ${duration.minutes}m ${duration.seconds}s`;
+      setTimeLeft(formatted);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [auction]);
+
+  const isAuctionActive = () => {
     const now = new Date();
-    const diff = end - now;
-
-    if (diff <= 0) return 'Auction closed';
-    const hrs = Math.floor(diff / 1000 / 60 / 60);
-    const mins = Math.floor((diff / 1000 / 60) % 60);
-    return `${hrs}h ${mins}m remaining`;
+    return new Date(auction.startTime) <= now && now <= new Date(auction.endTime);
   };
+
+  const handleBidSubmit = async () => {
+    if (!bidAmount || bidAmount <= 0) {
+      alert("Enter a valid bid amount");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        `http://localhost:8080/api/bids/auction/${id}`,
+        { amount: bidAmount,
+          companyId: localStorage.getItem("userId") // Assuming userId is stored in localStorage
+        },
+        { withCredentials: true }
+      );
+      alert("Bid placed successfully!");
+      setBidAmount("");
+      fetchBids();
+    } catch (error) {
+      console.error("Error placing bid:", error);
+      alert(error.response?.data?.message || "Failed to place bid");
+    }
+  };
+
+  const formatTime = (iso) => new Date(iso).toLocaleString();
+
+  if (!auction) return <div className="text-center mt-5">Loading auction...</div>;
 
   return (
     <>
-    {userRole === "admin" && <AdminNavbar />}
-    {userRole === "company" && <CompanyNavbar />}
-    <div className="container mt-5">
-      <Card>
-        <Card.Body>
-          <div className="d-flex">
-            <img src={auction.imageUrl} alt="Item" width={200} className="me-4" />
-            <div>
-              <h3>{auction.itemName}</h3>
-              <p>{auction.description}</p>
-              <p><strong>Type:</strong> {auction.type}</p>
-              <p><strong>Base Price:</strong> ₹{auction.basePrice}</p>
-              <p><strong>Quantity:</strong> {auction.quantity}</p>
-              <p><strong>Time Remaining:</strong> {calculateTimeRemaining()}</p>
-            </div>
+      {userRole === "admin" && <AdminNavbar />}
+      {userRole === "company" && <CompanyNavbar />}
+
+      <div className="container my-4">
+      
+
+        {/* Countdown Timer */}
+        {timeLeft && (
+          <div className="text-center mb-4">
+            <h5 className="fw-bold text-danger">Time left: {timeLeft}</h5>
           </div>
-        </Card.Body>
-      </Card>
+        )}
 
-      <h4 className="mt-5">Current Bids</h4>
-      <Table striped bordered className="mt-3">
-        <thead>
-          <tr>
-            <th>Bidder</th>
-            <th>Amount</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bids.map((bid, index) => (
-            <tr key={index}>
-              <td>{bid.name}</td>
-              <td>₹{bid.amount}</td>
-              <td>{bid.time}</td>
+        <div className="card mb-4">
+          <div className="card-body">
+            <h5 className="card-title">{auction.item_name}</h5>
+            <p className="card-text"><strong>Type:</strong> {auction.type} Bid</p>
+            <p className="card-text"><strong>Quantity:</strong> {auction.quantity}</p>
+            <p className="card-text"><strong>Starting Price:</strong> ₹{auction.startingPrice}</p>
+            <p className="card-text"><strong>Current Bid:</strong> ₹{auction.currentBid}</p>
+            <p className="card-text"><strong>Start Time:</strong> {formatTime(auction.startTime)}</p>
+            <p className="card-text"><strong>End Time:</strong> {formatTime(auction.endTime)}</p>
+          </div>
+        </div>
+
+        {/* Bids Table */}
+        <h4>Current Bids</h4>
+        <table className="table table-striped mb-5">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Bid Amount</th>
+              <th>Timestamp</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {bids.map((bid, index) => (
+              <tr key={index}>
+                <td>{bid.companyName}</td>
+                <td>₹{bid.amount}</td>
+                <td>{format(new Date(bid.bidTime), 'dd MMM yyyy, hh:mm a')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      <h5 className="mt-5">Place Your Bid</h5>
-      <Form className="mt-3">
-        <Form.Group controlId="bidAmount">
-          <Form.Label>Bid Amount</Form.Label>
-          <Form.Control type="number" placeholder="Enter your bid" />
-        </Form.Group>
-        <Button variant="primary" className="mt-3">Submit Bid</Button>
-      </Form>
-    </div>
+        {/* Place Bid */}
+        {userRole === "company" && isAuctionActive() && (
+          <div className="mt-4">
+            {!showBidForm ? (
+              <button className="btn btn-outline-primary" onClick={() => setShowBidForm(true)}>
+                Place a Bid
+              </button>
+            ) : (
+              <div className="card p-4 mt-3">
+                <h5>Submit Your Bid</h5>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleBidSubmit();
+                    setShowBidForm(false);
+                  }}
+                >
+                  <div className="mb-3">
+                    <label className="form-label">Bid Amount (₹)</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      placeholder="Enter your bid"
+                      value={bidAmount}
+                      onChange={(e) => setBidAmount(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="d-flex gap-2">
+                    <button type="submit" className="btn btn-primary">Submit Bid</button>
+                    <button type="button" className="btn btn-secondary" onClick={() => setShowBidForm(false)}>
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </>
   );
-};
-
-export default AuctionDetails;
+}
