@@ -1,23 +1,30 @@
-import React from 'react';
-import AdminNavbar from '../../components/Navbar/AdminNavbar';
+import AdminNavbar from "../../components/Navbar/AdminNavbar";
+
 export default function AdminDashboard() {
   return (
     <>
-    <AdminNavbar/>
-    <div className="container mt-5 pt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-10">
-          <div className="card shadow-sm p-4 border-0">
-            <h2 className="mb-3">🏢 Welcome to RINL Auction Dashboard</h2>
-            <p className="text-muted fs-5">
-              Manage steel tenders, view auctions, and monitor bidding activity in real time.
-            </p>
-            {/* Add buttons or quick links here if you like */}
+      <AdminNavbar />
+      <div className="container py-4">
+        <h2 className="mb-4 text-center fw-bold">Welcome to Admin Dashboard</h2>
+
+        <div className="row">
+          <div className="col-md-6 mb-4">
+            <div className="card shadow border-0">
+              <div className="card-body">
+                <h5 className="card-title fw-semibold">Inventory Management</h5>
+                <p className="card-text">
+                  Add, view, and manage product inventory.
+                </p>
+                <a href="/admin/inventory" className="btn btn-dark">
+                  Go to Inventory
+                </a>
+              </div>
+            </div>
           </div>
+
+          {/* Add more cards here for Auction Management, Company Requests etc. */}
         </div>
       </div>
-    </div>
     </>
   );
 }
-

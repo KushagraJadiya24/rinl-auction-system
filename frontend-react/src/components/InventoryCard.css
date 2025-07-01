@@ -1,0 +1,41 @@
+/* InventoryCard.css */
+
+.inventory-card {
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
+}
+
+.inventory-card:hover {
+  transform: translateY(-5px);
+}
+
+.inventory-image {
+  height: 200px;
+  width: 100%;
+  object-fit: cover;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+.inventory-body {
+  padding: 1rem;
+}
+
+.inventory-title {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.inventory-description {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.inventory-quantity {
+  color: #888;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+}
