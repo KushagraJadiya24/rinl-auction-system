@@ -7,6 +7,7 @@ import { useState } from "react";
 import Modal from "../components/ui/Modal";
 import axios from "axios";
 import getAuctionStatus from "../utils/getAuctionStatus";
+import CompanyNavbar from "../components/Navbar/CompanyNavbar";
 
 export default function AuctionsPage() {
   const navigate = useNavigate();
@@ -49,10 +50,12 @@ export default function AuctionsPage() {
   };
 
   const goToAuctionPage = (id) => navigate(`/auctions/${id}`);
-
+  console.log("User Role:", userRole);
   return (
     <>
       {userRole === "admin" && <AdminNavbar />}
+      {userRole === "company" && <CompanyNavbar />}
+
       <div className="container py-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2 className="fw-bold">Auctions</h2>

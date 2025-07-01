@@ -16,7 +16,7 @@ function App() {
                 <Route path="/admin/inventory" element={<AdminInventory />} /> 
                 <Route path="/company/:id/dashboard" element={<CompanyDashboard />} />
                 <Route path="/auctions" element={<AuctionsPage />} />
-                <Route path="/auction/:id" element={<AuctionDetailsPage />} />
+                <Route path="/auctions/:id" element={<AuctionDetailsPage />} />
                 <Route path="/company/:id/my-bids"  element={<MyBidsPage />} />
 
             </Routes>

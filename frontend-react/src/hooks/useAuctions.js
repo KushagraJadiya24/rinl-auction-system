@@ -1,6 +1,7 @@
 // hooks/useAuctions.js
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export function useAuctions() {
   const [userRole, setUserRole] = useState("");
@@ -8,11 +9,12 @@ export function useAuctions() {
   const [auctions, setAuctions] = useState([]);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    setUserRole(user?.role);
+     const roleFromCookie = Cookies.get("role");
+      setUserRole(roleFromCookie);
+
     fetchAuctions();
 
-    if (user?.role === "admin") {
+    if (roleFromCookie === "admin") {
       fetchInventory();
     }
   }, []);
